@@ -22,22 +22,22 @@ const (
 // the env tags.
 type Config struct {
 	Level  string       `koanf:"level" env:"LEVEL"`
-	Caller CallerConfig `koanf:"caller"`
-	Buffer BufferConfig `koanf:"buffer"`
+	Caller CallerConfig `koanf:"caller" envPrefix:"CALLER_"`
+	Buffer BufferConfig `koanf:"buffer" envPrefix:"BUFFER_"`
 }
 
 // CallerConfig controls caller annotations. Unless Enabled is explicitly set,
 // caller annotations are enabled at debug level and disabled otherwise.
 type CallerConfig struct {
-	Enabled *bool `koanf:"enabled" env:"CALLER_ENABLED"`
+	Enabled *bool `koanf:"enabled" env:"ENABLED"`
 }
 
 // BufferConfig controls optional write buffering. Buffering is disabled by
 // default. Size and FlushInterval use zap defaults when left at zero.
 type BufferConfig struct {
-	Enabled       bool          `koanf:"enabled" env:"BUFFER_ENABLED"`
-	Size          int           `koanf:"size" env:"BUFFER_SIZE"`
-	FlushInterval time.Duration `koanf:"flush_interval" env:"BUFFER_FLUSH_INTERVAL"`
+	Enabled       bool          `koanf:"enabled" env:"ENABLED"`
+	Size          int           `koanf:"size" env:"SIZE"`
+	FlushInterval time.Duration `koanf:"flush_interval" env:"FLUSH_INTERVAL"`
 }
 
 // Validate checks values that can be validated independently of runtime
