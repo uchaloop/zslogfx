@@ -61,6 +61,13 @@ fx.Supply(zslogfx.Config{Level: "info"}),
 zslogfx.Module(),
 ```
 
+Or build the same config entirely from environment variables:
+
+```go
+confx.ProvideNoFileDefault[zslogfx.Config]("log"),
+zslogfx.Module(),
+```
+
 ## Configuration
 
 `Config` carries passive `koanf` (file) and `env` (environment) tags; zslogfx
@@ -107,7 +114,9 @@ One JSON format, ECS-aligned for OpenSearch: `@timestamp`, `log.level`,
 ECS `log.origin` object so index mappings never conflict), and durations as
 numeric milliseconds so they aggregate. The format is fixed - there is no encoder
 override. Because logging goes through slog, a value implementing
-`slog.LogValuer` (such as `secret.Secret`) is masked automatically.
+`slog.LogValuer` (such as
+[`secret/v2.Secret`](https://pkg.go.dev/github.com/uchaloop/secret/v2)) is masked
+automatically.
 
 ## Buffering
 
@@ -138,4 +147,3 @@ to their authors and maintainers.
 ## License
 
 [MIT](LICENSE).
-
