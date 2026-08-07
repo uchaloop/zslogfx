@@ -7,6 +7,14 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-08-07
+
+### Fixed
+
+- Ignore `EBADF` returned while syncing the default `os.Stdout` during
+  shutdown. Custom `WriteSyncer` implementations still return this error so
+  closed files, sockets, and other destinations are not hidden.
+
 ## [0.1.2] - 2026-08-06
 
 ### Changed
@@ -48,7 +56,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Buffering is off by default and opt-in (for high-volume pods), flushed on
   graceful shutdown.
 
-[Unreleased]: https://github.com/uchaloop/zslogfx/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/uchaloop/zslogfx/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/uchaloop/zslogfx/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/uchaloop/zslogfx/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/uchaloop/zslogfx/releases/tag/v0.1.1
 [0.1.0]: https://github.com/uchaloop/zslogfx/releases/tag/v0.1.0

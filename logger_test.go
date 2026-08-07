@@ -2,9 +2,11 @@ package zslogfx
 
 import (
 	"bytes"
+	"errors"
 	"log/slog"
 	"strings"
 	"sync"
+	"syscall"
 	"testing"
 	"time"
 
@@ -177,5 +179,16 @@ func TestWithWriteSyncerNilIsNoOp(t *testing.T) {
 	logger.Slog.Info("kept")
 	if !strings.Contains(ws.String(), `"message":"kept"`) {
 		t.Fatalf("WithWriteSyncer(nil) clobbered the destination: %s", ws.String())
+	}
+}
+
+func TestNormalizeSyncErrorIgnoresBadDescriptorOnlyForStdout(t *testing.T) {
+	if err := normalizeSyncError(syscall.EBADF, true); err != nil {
+		t.Fatalf("stdout EBADF was not ignored: %v", err)
+	}
+
+	err := normalizeSyncError(syscall.EBADF, false)
+	if !errors.Is(err, syscall.EBADF) {
+		t.Fatalf("custom syncer EBADF must be returned, got: %v", err)
 	}
 }
