@@ -65,7 +65,8 @@ func Make(cfg Config, opts ...Option) (*Logger, error) {
 	}
 
 	ws := s.writeSyncer
-	if ws == nil {
+	usesStdout := ws == nil
+	if usesStdout {
 		ws = zapcore.AddSync(os.Stdout)
 	}
 
@@ -115,7 +116,7 @@ func Make(cfg Config, opts ...Option) (*Logger, error) {
 		flush = buffered.Stop
 	}
 	l.closeFn = func() error {
-		return normalizeSyncError(flush())
+		return normalizeSyncError(flush(), usesStdout)
 	}
 
 	return l, nil
@@ -157,10 +158,11 @@ func defaultEncoderConfig() zapcore.EncoderConfig {
 // fsync is not meaningful - terminals, pipes, /dev/null - which is the normal
 // case for stdout/stderr. They do not indicate lost userspace-buffered records.
 // A real file returns a different error (e.g. EIO), which passes through.
-func normalizeSyncError(err error) error {
+func normalizeSyncError(err error, usesStdout bool) error {
 	if errors.Is(err, os.ErrInvalid) ||
 		errors.Is(err, syscall.EINVAL) ||
-		errors.Is(err, syscall.ENOTTY) {
+		errors.Is(err, syscall.ENOTTY) ||
+		(usesStdout && errors.Is(err, syscall.EBADF)) {
 		return nil
 	}
 
