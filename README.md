@@ -15,20 +15,20 @@ go get github.com/uchaloop/zslogfx
 
 ## Fx
 
-```toml
-[log]
-level = "info"
-
-[log.buffer]
-enabled = false
-```
-
 ```go
 fx.New(
 	confx.Module(),
 	confx.Provide[zslogfx.Config]("log"),
 	zslogfx.Module(),
 ).Run()
+```
+
+The instance name gives the prefix, so `"log"` reads `LOG_LEVEL` and the rest of
+`LOG_*`:
+
+```text
+LOG_LEVEL=info
+LOG_BUFFER_ENABLED=false
 ```
 
 After installation, use the standard package-level API anywhere:
@@ -40,7 +40,8 @@ slog.Error("request failed", "error", err)
 
 The same `*slog.Logger` is also available through Fx dependency injection.
 
-Without a file:
+A `Config` assembled in Go works just as well, for a tool that reads no
+environment at all:
 
 ```go
 fx.New(
@@ -52,18 +53,18 @@ fx.New(
 
 ## Configuration
 
-With the `log` section, supported variables are:
+Under the `log` instance name:
 
-```text
-LOG_LEVEL
-LOG_CALLER_ENABLED
-LOG_BUFFER_ENABLED
-LOG_BUFFER_SIZE
-LOG_BUFFER_FLUSH_INTERVAL
-```
+| Variable | Type | Empty means |
+|---|---|---|
+| `LOG_LEVEL` | `string` | zap decides |
+| `LOG_CALLER_ENABLED` | `bool` | on at debug level, off otherwise |
+| `LOG_BUFFER_ENABLED` | `bool` | buffering off |
+| `LOG_BUFFER_SIZE` | `int` | the zap default |
+| `LOG_BUFFER_FLUSH_INTERVAL` | `duration` | the zap default |
 
-Caller information is enabled automatically at debug level unless explicitly
-configured.
+Nothing is required: a logger with no configuration at all is a working logger.
+`confx.Manifest[zslogfx.Config]("log")` lists the same set from the type itself.
 
 ## Fields and options
 
