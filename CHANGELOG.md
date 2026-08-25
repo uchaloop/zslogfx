@@ -5,6 +5,13 @@ All notable changes to this module are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-08-25
+
+### Fixed
+
+- The README described configuration as a TOML table and named a setting by its
+  file key. 0.2.0 stopped reading files; the documentation had not caught up.
+
 ## [0.2.0] - 2026-08-25
 
 ### Changed
@@ -64,7 +71,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Buffering is off by default and opt-in (for high-volume pods), flushed on
   graceful shutdown.
 
-[Unreleased]: https://github.com/uchaloop/zslogfx/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/uchaloop/zslogfx/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/uchaloop/zslogfx/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/uchaloop/zslogfx/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/uchaloop/zslogfx/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/uchaloop/zslogfx/compare/v0.1.1...v0.1.2
