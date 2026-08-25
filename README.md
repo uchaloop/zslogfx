@@ -25,8 +25,8 @@ enabled = false
 
 ```go
 fx.New(
-	confx.LoadDir("config"),
-	confx.ProvideDefault[zslogfx.Config]("log"),
+	confx.Module(),
+	confx.Provide[zslogfx.Config]("log"),
 	zslogfx.Module(),
 ).Run()
 ```
@@ -49,14 +49,6 @@ fx.New(
 )
 ```
 
-Or load the configuration entirely from environment variables:
-
-```go
-fx.New(
-	confx.ProvideNoFileDefault[zslogfx.Config]("log"),
-	zslogfx.Module(),
-)
-```
 
 ## Configuration
 

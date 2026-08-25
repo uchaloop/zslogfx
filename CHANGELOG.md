@@ -7,6 +7,14 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- `Validate` reports every problem at once instead of the first.
+
+### Removed
+
+- The `koanf` struct tags. Configuration is read from the environment only.
+
 ## [0.1.3] - 2026-08-07
 
 ### Fixed
