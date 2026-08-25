@@ -5,7 +5,15 @@ All notable changes to this module are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0] - 2026-08-25
+
+### Changed
+
+- `Validate` reports every problem at once instead of the first.
+
+### Removed
+
+- The `koanf` struct tags. Configuration is read from the environment only.
 
 ## [0.1.3] - 2026-08-07
 
@@ -56,7 +64,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Buffering is off by default and opt-in (for high-volume pods), flushed on
   graceful shutdown.
 
-[Unreleased]: https://github.com/uchaloop/zslogfx/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/uchaloop/zslogfx/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/uchaloop/zslogfx/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/uchaloop/zslogfx/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/uchaloop/zslogfx/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/uchaloop/zslogfx/releases/tag/v0.1.1
