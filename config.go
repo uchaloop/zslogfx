@@ -1,12 +1,12 @@
 package zslogfx
 
 import (
-	"errors"
-	"fmt"
 	"log/slog"
 	"time"
 
 	"go.uber.org/zap/zapcore"
+
+	"github.com/uchaloop/validate"
 )
 
 const (
@@ -44,21 +44,18 @@ type BufferConfig struct {
 // problem at once rather than the first: a deployment is fixed in a config map
 // and rolled out, so one report is one round trip.
 func (c Config) Validate() error {
-	var errs []error
+	var errs validate.Errors
 
 	if len(c.Level) != 0 {
 		if _, err := zapcore.ParseLevel(c.Level); err != nil {
-			errs = append(errs, fmt.Errorf("level: %w", err))
+			errs.Addf("level: %w", err)
 		}
 	}
-	if c.Buffer.Size < 0 {
-		errs = append(errs, errors.New("buffer.size must not be negative"))
-	}
-	if c.Buffer.FlushInterval < 0 {
-		errs = append(errs, errors.New("buffer.flush_interval must not be negative"))
-	}
 
-	return errors.Join(errs...)
+	errs.Require(c.Buffer.Size >= 0, "buffer.size must not be negative")
+	errs.Require(c.Buffer.FlushInterval >= 0, "buffer.flush_interval must not be negative")
+
+	return errs.Err()
 }
 
 type settings struct {
