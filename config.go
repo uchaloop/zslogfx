@@ -17,8 +17,8 @@ const (
 // Config is the serializable logger configuration.
 //
 // The tags are deliberately passive: zslogfx does not read the environment.
-// Applications may fill Config with confmaker/confx, another configuration
-// library, or plain Go code.
+// Applications may fill Config with github.com/uchaloop/confmaker, another
+// configuration library, or plain Go code.
 type Config struct {
 	Level  string       `env:"LEVEL"`
 	Caller CallerConfig `envPrefix:"CALLER_"`
@@ -39,8 +39,13 @@ type BufferConfig struct {
 	FlushInterval time.Duration `env:"FLUSH_INTERVAL"`
 }
 
+// ConfigName is the default instance name, "log": a loader such as confmaker
+// reads LOG_LEVEL and the rest of LOG_* unless the application names the
+// instance itself.
+func (Config) ConfigName() string { return "log" }
+
 // Validate checks values that can be validated independently of runtime
-// Options. It is called automatically by confmaker/confx, and reports every
+// Options. It is called automatically by confmaker, and reports every
 // problem at once rather than the first: a deployment is fixed in a config map
 // and rolled out, so one report is one round trip.
 func (c Config) Validate() error {
