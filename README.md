@@ -18,13 +18,13 @@ go get github.com/uchaloop/zslogfx
 ```go
 fx.New(
 	confx.Module(),
-	confx.Provide[zslogfx.Config]("log"),
+	confx.Provide[zslogfx.Config](),
 	zslogfx.Module(),
 ).Run()
 ```
 
-The instance name gives the prefix, so `"log"` reads `LOG_LEVEL` and the rest of
-`LOG_*`:
+`Config` names its default instance `log`, which gives the prefix, so it reads
+`LOG_LEVEL` and the rest of `LOG_*`:
 
 ```text
 LOG_LEVEL=info
@@ -64,7 +64,7 @@ Under the `log` instance name:
 | `LOG_BUFFER_FLUSH_INTERVAL` | `duration` | the zap default |
 
 Nothing is required: a logger with no configuration at all is a working logger.
-`confx.Manifest[zslogfx.Config]("log")` lists the same set from the type itself.
+`confmaker.Manifest[zslogfx.Config]()` lists the same set from the type itself.
 
 ## Fields and options
 
