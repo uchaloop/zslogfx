@@ -2,7 +2,6 @@ package zslogfx
 
 import (
 	"log/slog"
-	"time"
 
 	"go.uber.org/zap/zapcore"
 )
@@ -10,7 +9,8 @@ import (
 // Option customizes logger construction after Config has been applied.
 type Option func(*settings)
 
-// WithLevel overrides Config.Level.
+// WithLevel overrides Config.Level. An empty level, like an empty
+// Config.Level, means info.
 func WithLevel(level string) Option {
 	return func(s *settings) {
 		s.level = level
@@ -24,14 +24,16 @@ func WithCaller(enabled bool) Option {
 	}
 }
 
-// WithStacktraceLevel adds a stack trace to records at or above level.
+// WithStacktraceLevel writes error.stack_trace on records at or above level.
+// Without it no stack trace is written, and none is collected.
 func WithStacktraceLevel(level slog.Level) Option {
 	return func(s *settings) {
 		s.stacktraceLevel = &level
 	}
 }
 
-// WithFields adds slog attributes to every record.
+// WithFields adds slog attributes to every record. Options accumulate, so
+// several calls add up.
 func WithFields(attrs ...slog.Attr) Option {
 	return func(s *settings) {
 		s.fields = append(s.fields, attrs...)
@@ -39,31 +41,12 @@ func WithFields(attrs ...slog.Attr) Option {
 }
 
 // WithWriteSyncer replaces stdout as the destination. A nil syncer is ignored
-// (stdout stays the default). It does not enable the built-in buffer; wrap the
-// destination yourself when custom buffering is required.
+// (stdout stays the default). The logger serializes writes to it, so ws does
+// not have to be safe for concurrent use.
 func WithWriteSyncer(ws zapcore.WriteSyncer) Option {
 	return func(s *settings) {
 		if ws != nil {
 			s.writeSyncer = ws
 		}
-	}
-}
-
-// WithBuffer enables the built-in buffer. Zero values select the defaults:
-// 4 MiB and a one-second flush interval.
-func WithBuffer(size int, flushInterval time.Duration) Option {
-	return func(s *settings) {
-		s.buffer = BufferConfig{
-			Enabled:       true,
-			Size:          size,
-			FlushInterval: flushInterval,
-		}
-	}
-}
-
-// WithoutBuffer disables buffering even when Config enables it.
-func WithoutBuffer() Option {
-	return func(s *settings) {
-		s.buffer = BufferConfig{}
 	}
 }

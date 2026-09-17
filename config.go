@@ -1,17 +1,11 @@
 package zslogfx
 
 import (
+	"fmt"
 	"log/slog"
-	"time"
+	"strings"
 
 	"go.uber.org/zap/zapcore"
-
-	"github.com/uchaloop/validate"
-)
-
-const (
-	defaultBufferSize    = 4 * 1024 * 1024
-	defaultFlushInterval = time.Second
 )
 
 // Config is the serializable logger configuration.
@@ -20,9 +14,9 @@ const (
 // Applications may fill Config with github.com/uchaloop/confmaker, another
 // configuration library, or plain Go code.
 type Config struct {
+	// Level is debug, info, warn (or warning) or error; empty means info.
 	Level  string       `env:"LEVEL"`
 	Caller CallerConfig `envPrefix:"CALLER_"`
-	Buffer BufferConfig `envPrefix:"BUFFER_"`
 }
 
 // CallerConfig controls caller annotations. Unless Enabled is explicitly set,
@@ -31,56 +25,54 @@ type CallerConfig struct {
 	Enabled *bool `env:"ENABLED"`
 }
 
-// BufferConfig controls optional write buffering. Buffering is disabled by
-// default. Size and FlushInterval use zap defaults when left at zero.
-type BufferConfig struct {
-	Enabled       bool          `env:"ENABLED"`
-	Size          int           `env:"SIZE"`
-	FlushInterval time.Duration `env:"FLUSH_INTERVAL"`
-}
-
 // ConfigName is the default instance name, "log": a loader such as confmaker
 // reads LOG_LEVEL and the rest of LOG_* unless the application names the
 // instance itself.
 func (Config) ConfigName() string { return "log" }
 
-// Validate checks values that can be validated independently of runtime
-// Options. It is called automatically by confmaker, and reports every
-// problem at once rather than the first: a deployment is fixed in a config map
-// and rolled out, so one report is one round trip.
+// Validate reports a level Make would reject. It is called automatically by
+// confmaker, so a bad value fails the deployment rather than the first record.
+// Make validates the level it ends up with, which an Option may have replaced.
 func (c Config) Validate() error {
-	var errs validate.Errors
-
-	if len(c.Level) != 0 {
-		if _, err := zapcore.ParseLevel(c.Level); err != nil {
-			errs.Addf("level: %w", err)
-		}
+	if len(c.Level) == 0 {
+		return nil
 	}
 
-	errs.Require(c.Buffer.Size >= 0, "buffer.size must not be negative")
-	errs.Require(c.Buffer.FlushInterval >= 0, "buffer.flush_interval must not be negative")
+	_, err := parseLevel(c.Level)
 
-	return errs.Err()
+	return err
+}
+
+// parseLevel accepts the four levels log/slog has (plus zap's "warning" for
+// "warn"), rather than every level
+// zapcore.ParseLevel takes: zapslog raises no record above zapcore.ErrorLevel,
+// so a core at dpanic, panic or fatal level would silently drop everything.
+func parseLevel(level string) (zapcore.Level, error) {
+	switch strings.ToLower(level) {
+	case "debug":
+		return zapcore.DebugLevel, nil
+	case "info":
+		return zapcore.InfoLevel, nil
+	case "warn", "warning":
+		return zapcore.WarnLevel, nil
+	case "error":
+		return zapcore.ErrorLevel, nil
+	default:
+		return 0, fmt.Errorf("level %q is not debug, info, warn or error", level)
+	}
 }
 
 type settings struct {
 	level           string
 	caller          *bool
 	stacktraceLevel *slog.Level
-	buffer          BufferConfig
 	fields          []slog.Attr
 	writeSyncer     zapcore.WriteSyncer
 }
 
 func settingsFromConfig(cfg Config) settings {
-	level := cfg.Level
-	if len(level) == 0 {
-		level = zapcore.InfoLevel.String()
-	}
-
 	return settings{
-		level:  level,
+		level:  cfg.Level,
 		caller: cfg.Caller.Enabled,
-		buffer: cfg.Buffer,
 	}
 }
