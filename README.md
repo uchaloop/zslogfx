@@ -20,7 +20,7 @@ go get github.com/uchaloop/zslogfx
 ```go
 fx.New(
 	confx.Module(),
-	confx.Provide[zslogfx.Config](),
+	confx.Provide[zslogfx.Config]("log"),
 	zslogfx.Module(),
 ).Run()
 ```
@@ -61,13 +61,16 @@ fx.New(
 
 Under the `log` instance name:
 
-| Variable | Type | Empty means |
+| Variable | Type | When unset |
 |---|---|---|
 | `LOG_LEVEL` | `string` (`debug`, `info`, `warn`/`warning`, `error`) | `info` |
-| `LOG_CALLER_ENABLED` | `bool` | on at debug level, off otherwise |
+| `LOG_CALLER_ENABLED` | `*bool` | on at debug level, off otherwise |
+
+An explicitly empty `LOG_CALLER_ENABLED` is invalid; set `true` or `false`,
+or leave it unset for automatic behavior.
 
 Nothing is required: a logger with no configuration at all is a working logger.
-`confmaker.Manifest[zslogfx.Config]()` lists the same set from the type itself.
+`confmaker.Manifest[zslogfx.Config]("log")` lists the same set from the type itself.
 
 ## Fields and options
 
