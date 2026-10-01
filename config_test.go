@@ -5,12 +5,6 @@ import (
 	"testing"
 )
 
-func TestConfigNameIsLog(t *testing.T) {
-	if got := (Config{}).ConfigName(); got != "log" {
-		t.Fatalf("ConfigName() = %q, want log", got)
-	}
-}
-
 func TestConfigEnvironmentTagStructure(t *testing.T) {
 	configType := reflect.TypeOf(Config{})
 

@@ -13,22 +13,18 @@ import (
 // The tags are deliberately passive: zslogfx does not read the environment.
 // Applications may fill Config with github.com/uchaloop/confmaker, another
 // configuration library, or plain Go code.
+// Register with the explicit instance name "log" to read LOG_*.
 type Config struct {
 	// Level is debug, info, warn (or warning) or error; empty means info.
-	Level  string       `env:"LEVEL"`
+	Level  string       `env:"LEVEL" envDescription:"Log level: debug, info, warn, warning or error; unset or empty uses info."`
 	Caller CallerConfig `envPrefix:"CALLER_"`
 }
 
 // CallerConfig controls caller annotations. Unless Enabled is explicitly set,
 // caller annotations are enabled at debug level and disabled otherwise.
 type CallerConfig struct {
-	Enabled *bool `env:"ENABLED"`
+	Enabled *bool `env:"ENABLED" envDescription:"Include caller annotations; when unset, enabled at debug level and disabled otherwise."`
 }
-
-// ConfigName is the default instance name, "log": a loader such as confmaker
-// reads LOG_LEVEL and the rest of LOG_* unless the application names the
-// instance itself.
-func (Config) ConfigName() string { return "log" }
 
 // Validate reports a level Make would reject. It is called automatically by
 // confmaker, so a bad value fails the deployment rather than the first record.
